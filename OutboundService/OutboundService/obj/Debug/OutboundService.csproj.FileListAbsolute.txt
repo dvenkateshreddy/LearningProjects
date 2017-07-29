@@ -1,0 +1,8 @@
+c:\users\v-vedu\documents\visual studio 2017\Projects\OutboundService\OutboundService\bin\Debug\OutboundService.exe.config
+c:\users\v-vedu\documents\visual studio 2017\Projects\OutboundService\OutboundService\bin\Debug\OutboundService.exe
+c:\users\v-vedu\documents\visual studio 2017\Projects\OutboundService\OutboundService\bin\Debug\OutboundService.pdb
+c:\users\v-vedu\documents\visual studio 2017\Projects\OutboundService\OutboundService\bin\Debug\Microsoft.Crm.Sdk.Proxy.dll
+c:\users\v-vedu\documents\visual studio 2017\Projects\OutboundService\OutboundService\bin\Debug\Microsoft.Xrm.Sdk.dll
+c:\users\v-vedu\documents\visual studio 2017\Projects\OutboundService\OutboundService\obj\Debug\OutboundService.csprojResolveAssemblyReference.cache
+c:\users\v-vedu\documents\visual studio 2017\Projects\OutboundService\OutboundService\obj\Debug\OutboundService.exe
+c:\users\v-vedu\documents\visual studio 2017\Projects\OutboundService\OutboundService\obj\Debug\OutboundService.pdb
