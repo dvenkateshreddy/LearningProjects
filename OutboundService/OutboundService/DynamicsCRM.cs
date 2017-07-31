@@ -11,9 +11,9 @@ namespace OutboundService
 {
     class DynamicsCRM
     {
-         public static IOrganizationService _service;
+        public IOrganizationService _service;
 
-        internal static IOrganizationService ConnectToMSCRM(string UserName, string Password, string SoapOrgServiceUri)
+        internal IOrganizationService ConnectToMSCRM(string UserName, string Password, string SoapOrgServiceUri)
         {
             try
             {

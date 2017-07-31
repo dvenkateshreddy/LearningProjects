@@ -5,11 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
 using System.IO;
+using System.Globalization;
 
 namespace OutboundService
 {
-    class Common
+    public class Common
     {
+        public string logFile;
         internal string GetDirectory()
         {
             string slash = "\\";
@@ -57,6 +59,52 @@ namespace OutboundService
                 }
             }
             return rootWithDate;
+        }
+
+        internal void Log(string filePath, string message, string sourceFile = null)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(filePath))
+                {
+                    bool isFileCreated = true;
+                    if (!File.Exists(filePath))
+                    {
+                        isFileCreated = false;
+                        File.Create(filePath).Dispose();
+                    }
+
+                    using (StreamWriter sw = File.AppendText(filePath))
+                    {
+                        var line = Environment.NewLine;
+                        string logMessage = string.Empty;
+                        if (!isFileCreated)
+                        {
+                            logMessage += "Log Written Date: " + " " + DateTime.Now.ToString(CultureInfo.CurrentCulture) + line;
+                        }
+
+                        if (!string.IsNullOrEmpty(sourceFile))
+                        {
+                            logMessage += "Source Name: " + sourceFile + line;
+                        }
+
+                        logMessage += message + line;
+                        sw.WriteLine(logMessage);
+                        sw.Flush();
+                        sw.Close();
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                e.ToString();
+                throw;
+            }
+        }
+
+        internal void SetLogFile(string fileName)
+        {
+            logFile = string.IsNullOrEmpty(fileName) ? null : GetDirectory() + "\\" + fileName + DateTime.Now.ToString("yyyyMMddHHmmss") + ".txt";
         }
 
         //public string RetriveDirectory(string directory)
