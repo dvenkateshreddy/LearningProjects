@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Crm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Query;
 using Microsoft.Xrm.Sdk;
+using System.Globalization;
 
 namespace OutboundService
 {
@@ -79,19 +80,21 @@ namespace OutboundService
 
 
                     query.AddLink("dfc_accountnirecord", "dfc_accountnirecord", "dfc_accountnirecordid", JoinOperator.Inner);
-                    query.LinkEntities[0].AddLink("dfc_accountni", "dfc_accountni", "dfc_accountniid", JoinOperator.Inner);
+                    query.LinkEntities[0].Columns.AddColumns("dfc_invoicenumber");
+                    //query.LinkEntities[0].AddLink("dfc_accountni", "dfc_accountni", "dfc_accountniid", JoinOperator.Inner);
+                    LinkEntity le2 = new LinkEntity("dfc_accountnirecord", "dfc_accountni", "dfc_accountni", "dfc_accountniid", JoinOperator.Inner);
+                    query.LinkEntities[0].LinkEntities.Add(le2);
+                    query.LinkEntities[0].LinkEntities[0].Columns.AddColumns("dfc_isexported", "dfc_name");
 
-                    FilterExpression fe = new FilterExpression(LogicalOperator.And);
+                    FilterExpression fe = new FilterExpression(LogicalOperator.Or);
 
-                    FilterExpression fe1 = new FilterExpression(LogicalOperator.And);
-                    FilterExpression fe2 = new FilterExpression(LogicalOperator.And);
+                    FilterExpression fe1 = new FilterExpression();
+                    FilterExpression fe2 = new FilterExpression();
 
 
-                    fe1.Conditions.Add(new ConditionExpression("dfc_isexported", ConditionOperator.Equal, false));
-                    fe2.Conditions.Add(new ConditionExpression("dfc_name", ConditionOperator.Contains, "ap_supplier_inv_dfc_20022017102512"));
 
-                    fe.AddFilter(fe1);
-                    fe.AddFilter(fe2);
+
+                   
 
                     
 
@@ -99,7 +102,16 @@ namespace OutboundService
                     query.LinkEntities[0].EntityAlias = "temp1";
                     query.LinkEntities[0].LinkEntities[0].EntityAlias = "temp2";
 
-                    query.LinkEntities[0].LinkEntities[0].LinkCriteria = fe;
+                  
+                    fe1.Conditions.Add(new ConditionExpression("temp2", "dfc_isexported", ConditionOperator.Equal, false));
+                    fe2.Conditions.Add(new ConditionExpression("temp1", "dfc_invoicenumber", ConditionOperator.Equal, "WSP0005378"));
+
+                    //fe2.Conditions.Add(new ConditionExpression("temp2", "dfc_name", ConditionOperator.Contains, "ap_supplier_inv_dfc_20022017102512"));
+                    fe.AddFilter(fe1);
+                    fe.AddFilter(fe2);
+                    //query.LinkEntities[0].LinkEntities[0].LinkCriteria = fe;
+                    query.Criteria.AddFilter(fe);
+
 
                     //query.LinkEntities[0].LinkEntities[0].LinkCriteria.AddCondition("dfc_isexported", ConditionOperator.Equal, false);
                     //query.LinkEntities[0].LinkEntities[0].LinkCriteria.AddCondition("dfc_name", ConditionOperator.Contains, "ap_supplier_inv_dfc_20022017102512");
@@ -128,8 +140,9 @@ namespace OutboundService
 
                     foreach (Entity payment in results.Entities)
                     {
-                        string value = payment.GetAttributeValue<EntityReference>("wrmm_supplementarypayment").Name + " - " + payment.GetAttributeValue<DateTime>("wrmm_paymentperiodfrom").ToString() + " - " +
-                            payment.GetAttributeValue<DateTime>("wrmm_paymentperiodto").ToString() + " - " + payment.GetAttributeValue<DateTime>("wrmm_scheduledissuedate").ToString();
+                        string value = payment.GetAttributeValue<EntityReference>("wrmm_supplementarypayment").Name + " - " + payment.GetAttributeValue<DateTime>("wrmm_paymentperiodfrom").ToString("dd/mm/yyyy", CultureInfo.InvariantCulture) + " - " +
+                             payment.GetAttributeValue<DateTime>("wrmm_paymentperiodto").ToString("dd/MM/yyyy", CultureInfo.InvariantCulture) + " - " + payment.GetAttributeValue<AliasedValue>("temp2.dfc_name").Value.ToString() + " - " + 
+                             payment.GetAttributeValue<AliasedValue>("temp2.dfc_isexported").Value.ToString() + " - " + payment.GetAttributeValue<string>("dfc_invoicenumber");
 
                         common.Log(common.logFile, value);
                     }
